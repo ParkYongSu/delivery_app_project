@@ -1,13 +1,29 @@
+import 'dart:convert';
+
 import 'package:delivery_app_project/common/component/custom_text_field.dart';
 import 'package:delivery_app_project/common/const/colors.dart';
+import 'package:delivery_app_project/common/const/data.dart';
 import 'package:delivery_app_project/common/layout/default_layout.dart';
+import 'package:delivery_app_project/common/view/root_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String userName = "";
+  String password = "";
+
+  @override
   Widget build(BuildContext context) {
+    final Dio dio = Dio();
+    const domain = "http://192.168.35.105:3000";
+
     return DefaultLayout(
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -38,21 +54,46 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomTextFormField(
                   hintText: "이메일을 입력해주세요.",
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    userName = value;
+                  },
                 ),
                 const SizedBox(
                   height: 16.0,
                 ),
                 CustomTextFormField(
                   hintText: "비밀번호를 입력해주세요.",
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    password = value;
+                  },
                   obscureText: true,
                 ),
                 const SizedBox(
                   height: 16.0,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    var url = "$domain/auth/login";
+                    var userData = "$userName:$password";
+                    var codec = utf8.fuse(base64);
+
+                    var stringToBase64 = codec.encode(userData);
+                    var response = await dio.post(
+                      url,
+                      options: Options(
+                        headers: {
+                          "Authorization" : "Basic $stringToBase64",
+                        },
+                      ),
+                    );
+                    var refreshToken = response.data["refreshToken"];
+                    var accessToken = response.data["accessToken"];
+
+                    await storage.write(key: refreshTokenKey, value: refreshToken);
+                    await storage.write(key: accessTokenKey, value: accessToken);
+
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => RootTab()));
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR
                   ),
@@ -61,7 +102,20 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    var url = "$domain/auth/token";
+
+                    var response = await dio.post(
+                      url,
+                      options: Options(
+                        headers: {
+                          "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY3NzY4NTU5NiwiZXhwIjoxNjc3NzcxOTk2fQ.qtw7SzDuojV-2rQbOHT0H594jOkKk8zzv_9X26UMBiU"
+                        }
+                      )
+                    );
+
+                    print(response.data);
+                  },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.black,
                   ),
