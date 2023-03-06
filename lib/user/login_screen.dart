@@ -22,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final Dio dio = Dio();
-    const domain = "http://192.168.35.105:3000";
 
     return DefaultLayout(
       child: SingleChildScrollView(
@@ -76,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     var url = "$domain/auth/login";
                     var userData = "$userName:$password";
                     var codec = utf8.fuse(base64);
-
                     var stringToBase64 = codec.encode(userData);
                     var response = await dio.post(
                       url,
@@ -86,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     );
+
                     var refreshToken = response.data["refreshToken"];
                     var accessToken = response.data["accessToken"];
 
@@ -103,18 +102,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    var url = "$domain/auth/token";
-
-                    var response = await dio.post(
-                      url,
-                      options: Options(
-                        headers: {
-                          "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY3NzY4NTU5NiwiZXhwIjoxNjc3NzcxOTk2fQ.qtw7SzDuojV-2rQbOHT0H594jOkKk8zzv_9X26UMBiU"
-                        }
-                      )
-                    );
-
-                    print(response.data);
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.black,
