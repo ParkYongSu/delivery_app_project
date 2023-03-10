@@ -12,11 +12,40 @@ class _RestaurantRepository implements RestaurantRepository {
   _RestaurantRepository(
     this._dio, {
     this.baseUrl,
-  });
+  }) {
+    baseUrl ??= 'http://192.168.0.45:3000/restaurant';
+  }
 
   final Dio _dio;
 
   String? baseUrl;
+
+  @override
+  Future<CursorPaginationModel<RestaurantModel>> paginate() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CursorPaginationModel<RestaurantModel>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CursorPaginationModel<RestaurantModel>.fromJson(
+      _result.data!,
+      (json) => RestaurantModel.fromJson(json as Map<String, dynamic>),
+    );
+    return value;
+  }
 
   @override
   Future<RestaurantDetailModel> getRestaurantDetailModel({required id}) async {

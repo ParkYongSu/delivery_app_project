@@ -4,7 +4,6 @@ import 'package:delivery_app_project/common/layout/default_layout.dart';
 import 'package:delivery_app_project/product/component/product_card.dart';
 import 'package:delivery_app_project/restaurant/component/restaurant_card.dart';
 import 'package:delivery_app_project/restaurant/model/restaurant_detail_model.dart';
-import 'package:delivery_app_project/restaurant/model/restaurant_model.dart';
 import 'package:delivery_app_project/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -23,7 +22,7 @@ class RestaurantDetailScreen extends StatelessWidget {
       ),
     );
 
-    final repository = RestaurantRepository(dio, baseUrl: "$domain/restaurant");
+    final repository = RestaurantRepository(dio);
 
     return repository.getRestaurantDetailModel(id: id);
   }
@@ -35,7 +34,6 @@ class RestaurantDetailScreen extends StatelessWidget {
       child: FutureBuilder<RestaurantDetailModel>(
         future: _getRestaurantDetail(),
         builder: (_, snapshot) {
-          print(snapshot.error);
           if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),

@@ -22,7 +22,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _checkToken() async {
-    final accessToken = await storage.read(key: accessTokenKey);
     final refreshToken = await storage.read(key: refreshTokenKey);
 
     if (!mounted) return;
