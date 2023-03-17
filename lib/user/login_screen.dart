@@ -4,18 +4,20 @@ import 'package:delivery_app_project/common/component/custom_text_field.dart';
 import 'package:delivery_app_project/common/const/colors.dart';
 import 'package:delivery_app_project/common/const/data.dart';
 import 'package:delivery_app_project/common/layout/default_layout.dart';
+import 'package:delivery_app_project/common/secure_storage/secure_storage_provider.dart';
 import 'package:delivery_app_project/common/view/root_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   String userName = "";
   String password = "";
 
@@ -30,9 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           top: true,
           bottom: false,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -80,35 +80,35 @@ class _LoginScreenState extends State<LoginScreen> {
                       url,
                       options: Options(
                         headers: {
-                          "Authorization" : "Basic $stringToBase64",
+                          "Authorization": "Basic $stringToBase64",
                         },
                       ),
                     );
 
                     var refreshToken = response.data["refreshToken"];
                     var accessToken = response.data["accessToken"];
+                    final storage = ref.read(secureStorageProvider);
 
-                    await storage.write(key: refreshTokenKey, value: refreshToken);
-                    await storage.write(key: accessTokenKey, value: accessToken);
+                    await storage.write(
+                        key: refreshTokenKey, value: refreshToken);
+                    await storage.write(
+                        key: accessTokenKey, value: accessToken);
 
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => RootTab()));
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => RootTab()),
+                        (route) => false);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: PRIMARY_COLOR
-                  ),
-                  child: Text(
-                    "로그인"
-                  ),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: PRIMARY_COLOR),
+                  child: Text("로그인"),
                 ),
                 TextButton(
-                  onPressed: () async {
-                  },
+                  onPressed: () async {},
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.black,
                   ),
-                  child: Text(
-                    "회원가입"
-                  ),
+                  child: Text("회원가입"),
                 )
               ],
             ),
@@ -149,6 +149,3 @@ class _SubTitle extends StatelessWidget {
     );
   }
 }
-
-
-

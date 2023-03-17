@@ -12,18 +12,18 @@ class _RestaurantRepository implements RestaurantRepository {
   _RestaurantRepository(
     this._dio, {
     this.baseUrl,
-  }) {
-    baseUrl ??= 'http://192.168.0.45:3000/restaurant';
-  }
+  });
 
   final Dio _dio;
 
   String? baseUrl;
 
   @override
-  Future<CursorPaginationModel<RestaurantModel>> paginate() async {
+  Future<CursorPaginationModel<RestaurantModel>> paginate(
+      {paginationParams = const PaginationParams()}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(paginationParams.toJson());
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final Map<String, dynamic>? _data = null;
