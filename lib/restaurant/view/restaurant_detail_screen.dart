@@ -45,7 +45,7 @@ class _RestaurantDetailScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(restaurantDetailProvider(widget.id));
     final ratingState = ref.watch(restaurantRatingProvider(widget.id));
-    print(ratingState);
+
     if (state == null) {
       return DefaultLayout(
         child: Center(
@@ -118,7 +118,7 @@ class _RestaurantDetailScreenState
               padding: EdgeInsets.only(
                 top: 8.0,
               ),
-              child: ProductCard.fromModel(
+              child: ProductCard.fromRestaurantProductModel(
                 model: models[index],
               ),
             );

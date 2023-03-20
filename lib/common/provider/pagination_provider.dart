@@ -74,9 +74,7 @@ class PaginationStateNotifier<T extends IModelWithId,
       } else {
         state = response;
       }
-    } catch (e, stack) {
-      print(e);
-      print(stack);
+    } catch (e) {
       state = CursorPaginationError(message: "에러 발생");
     }
   }
