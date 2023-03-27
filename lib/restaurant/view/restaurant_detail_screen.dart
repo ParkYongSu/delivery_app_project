@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletons/skeletons.dart';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
+  static const String routeName = "restaurantDetail";
   final String id;
 
   const RestaurantDetailScreen({Key? key, required this.id}) : super(key: key);

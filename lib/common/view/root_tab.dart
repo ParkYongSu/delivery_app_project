@@ -2,9 +2,11 @@ import 'package:delivery_app_project/common/const/colors.dart';
 import 'package:delivery_app_project/common/layout/default_layout.dart';
 import 'package:delivery_app_project/product/view/product_screen.dart';
 import 'package:delivery_app_project/restaurant/view/restaurant_screen.dart';
+import 'package:delivery_app_project/user/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class RootTab extends StatefulWidget {
+  static const String routeName = "home";
   const RootTab({Key? key}) : super(key: key);
 
   @override
@@ -74,7 +76,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           RestaurantScreen(),
           ProductScreen(),
           Center(child: Text("receipt"),),
-          Center(child: Text("profile"),),
+          ProfileScreen(),
         ],
       ),
     );
