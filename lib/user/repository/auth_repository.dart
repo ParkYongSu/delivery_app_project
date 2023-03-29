@@ -43,8 +43,12 @@ class AuthRepository {
   }
 
   Future<TokenResponse> token() async {
-    final response = await dio.get("$baseUrl/token",
-        options: Options(headers: {"refreshToken": "true"}));
+    final response = await dio.get(
+      "$baseUrl/token",
+      options: Options(
+        headers: {"refreshToken": "true"},
+      ),
+    );
 
     return TokenResponse.fromJson(response.data);
   }
