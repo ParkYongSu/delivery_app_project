@@ -1,7 +1,9 @@
+import 'package:delivery_app_project/common/view/basket_screen.dart';
 import 'package:delivery_app_project/common/view/root_tab.dart';
 import 'package:delivery_app_project/common/view/splash_screen.dart';
+import 'package:delivery_app_project/order/view/order_done_screen.dart';
 import 'package:delivery_app_project/restaurant/view/restaurant_detail_screen.dart';
-import 'package:delivery_app_project/user/screen/login_screen.dart';
+import 'package:delivery_app_project/user/view/login_screen.dart';
 import 'package:delivery_app_project/user/model/user_model.dart';
 import 'package:delivery_app_project/user/provider/user_me_provider.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,16 @@ class AuthProvider extends ChangeNotifier {
           path: "/login",
           name: LoginScreen.routeName,
           builder: (_, __) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: "/basket",
+          name: BasketScreen.routeName,
+          builder: (_, __) => const BasketScreen(),
+        ),
+        GoRoute(
+          path: "/order_done",
+          name: OrderDoneScreen.routeName,
+          builder: (_, __) => const OrderDoneScreen(),
         ),
       ];
 

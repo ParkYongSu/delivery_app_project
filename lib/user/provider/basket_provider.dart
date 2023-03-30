@@ -1,12 +1,36 @@
-import 'dart:math';
-
 import 'package:delivery_app_project/product/model/product_model.dart';
 import 'package:delivery_app_project/user/model/basket_item_model.dart';
+import 'package:delivery_app_project/user/model/basket_patch_body.dart';
+import 'package:delivery_app_project/user/repository/user_me_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
+final basketProvider =
+    StateNotifierProvider<BasketStateNotifier, List<BasketItemModel>>((ref) {
+  final repository = ref.watch(userMeRepositoryProvider);
+  return BasketStateNotifier(
+    repository: repository,
+  );
+});
+
 class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
-  BasketStateNotifier() : super([]);
+  final UserMeRepository repository;
+
+  BasketStateNotifier({
+    required this.repository,
+  }) : super([]);
+
+  Future<void> patchBasket() async {
+    repository.patchBasket(
+        body: BasketPatchBody(
+      basket: state.map(
+        (e) => BasketPatchBodyBasket(
+          productId: e.product.id,
+          count: e.count,
+        ),
+      ).toList(),
+    ));
+  }
 
   Future<void> addBasketItem({
     required ProductModel product,
@@ -30,6 +54,8 @@ class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
         ),
       ];
     }
+
+    await patchBasket();
   }
 
   Future<void> remoteBasketItem({
@@ -50,5 +76,7 @@ class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
         .map((e) =>
             e.product.id != product.id ? e : e.copyWith(count: e.count - 1))
         .toList();
+
+    await patchBasket();
   }
 }

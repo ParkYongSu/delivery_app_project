@@ -58,7 +58,7 @@ class CustomInterceptor extends Interceptor {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     print(
-        "[ERR] [${err.error}] ${err.requestOptions.uri} ${err.response?.statusCode} ${err.requestOptions.headers}");
+        "[ERR] [${err.error}] ${err.requestOptions.uri} ${err.response?.statusCode} ${err.requestOptions.headers} ${err.requestOptions.data}");
 
     var isTokenExpiration = err.response?.statusCode == 401;
 

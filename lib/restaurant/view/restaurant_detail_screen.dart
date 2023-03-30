@@ -1,7 +1,10 @@
+import 'package:delivery_app_project/common/const/colors.dart';
 import 'package:delivery_app_project/common/layout/default_layout.dart';
 import 'package:delivery_app_project/common/model/cursor_pagination_model.dart';
 import 'package:delivery_app_project/common/utils/pagination_utils.dart';
+import 'package:delivery_app_project/common/view/basket_screen.dart';
 import 'package:delivery_app_project/product/component/product_card.dart';
+import 'package:delivery_app_project/product/model/product_model.dart';
 import 'package:delivery_app_project/rating/component/rating_card.dart';
 import 'package:delivery_app_project/rating/model/rating_model.dart';
 import 'package:delivery_app_project/restaurant/component/restaurant_card.dart';
@@ -9,8 +12,10 @@ import 'package:delivery_app_project/restaurant/model/restaurant_detail_model.da
 import 'package:delivery_app_project/restaurant/model/restaurant_model.dart';
 import 'package:delivery_app_project/restaurant/provider/restaurant_provider.dart';
 import 'package:delivery_app_project/restaurant/provider/restaurant_rating_provider.dart';
+import 'package:delivery_app_project/user/provider/basket_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletons/skeletons.dart';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
@@ -46,6 +51,7 @@ class _RestaurantDetailScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(restaurantDetailProvider(widget.id));
     final ratingState = ref.watch(restaurantRatingProvider(widget.id));
+    final basket = ref.watch(basketProvider);
 
     if (state == null) {
       return DefaultLayout(
@@ -57,6 +63,32 @@ class _RestaurantDetailScreenState
 
     return DefaultLayout(
       title: "불타는 떡볶이",
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.pushNamed(BasketScreen.routeName);
+        },
+        backgroundColor: PRIMARY_COLOR,
+        child: Badge(
+          isLabelVisible: basket.isNotEmpty,
+          backgroundColor: Colors.white,
+          label: Text(
+            basket
+                .fold<int>(
+                  0,
+                  (previousValue, element) => previousValue + element.count,
+                )
+                .toString(),
+            style: TextStyle(
+              color: PRIMARY_COLOR,
+              fontSize: 10,
+            ),
+          ),
+          child: Icon(
+            Icons.shopping_cart,
+            color: Colors.white,
+          ),
+        ),
+      ),
       child: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -67,6 +99,7 @@ class _RestaurantDetailScreenState
           if (state is RestaurantDetailModel) _renderLabel(),
           if (state is RestaurantDetailModel)
             _renderList(
+              restaurant: state,
               models: state.products,
             ),
           if (ratingState is CursorPaginationModel<RatingModel>)
@@ -106,6 +139,7 @@ class _RestaurantDetailScreenState
   }
 
   SliverPadding _renderList({
+    required RestaurantModel restaurant,
     required List<RestaurantProductModel> models,
   }) {
     return SliverPadding(
@@ -115,12 +149,27 @@ class _RestaurantDetailScreenState
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (_, index) {
+            final model = models[index];
             return Padding(
               padding: EdgeInsets.only(
                 top: 8.0,
               ),
-              child: ProductCard.fromRestaurantProductModel(
-                model: models[index],
+              child: InkWell(
+                onTap: () {
+                  ref.read(basketProvider.notifier).addBasketItem(
+                        product: ProductModel(
+                          id: model.id,
+                          name: model.name,
+                          imgUrl: model.imgUrl,
+                          detail: model.detail,
+                          price: model.price,
+                          restaurant: restaurant,
+                        ),
+                      );
+                },
+                child: ProductCard.fromRestaurantProductModel(
+                  model: model,
+                ),
               ),
             );
           },

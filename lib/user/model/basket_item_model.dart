@@ -1,5 +1,4 @@
 import 'package:delivery_app_project/product/model/product_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'basket_item_model.g.dart';
