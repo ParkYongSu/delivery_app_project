@@ -11,7 +11,7 @@ class ProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PaginationListView(
+    return PaginationListView<ProductModel>(
         provider: productProvider,
         itemBuilder: <ProductModel>(_, model) {
           return GestureDetector(

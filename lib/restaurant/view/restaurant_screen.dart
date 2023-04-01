@@ -5,12 +5,14 @@ import 'package:delivery_app_project/restaurant/view/restaurant_detail_screen.da
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/restaurant_model.dart';
+
 class RestaurantScreen extends StatelessWidget {
   const RestaurantScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return PaginationListView(
+    return PaginationListView<RestaurantModel>(
       provider: restaurantProvider,
       itemBuilder: <RestaurantModel>(_, model) {
         return GestureDetector(

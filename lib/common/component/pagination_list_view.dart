@@ -52,7 +52,7 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
   Widget build(BuildContext context) {
     final state = ref.watch(widget.provider);
 
-    if (state is CursorPaginationLoading) {
+    if (state is CursorPaginationLoading || state is CursorPaginationRefetching) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -87,35 +87,43 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
       padding: EdgeInsets.symmetric(
         horizontal: 16.0,
       ),
-      child: ListView.separated(
-        controller: _scrollController,
-        itemBuilder: (_, index) {
-          if (index == cp.data.length) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 8.0,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.read(widget.provider.notifier).paginate(
+            forceRefetch: true,
+          );
+        },
+        child: ListView.separated(
+          controller: _scrollController,
+          physics: AlwaysScrollableScrollPhysics(),
+          itemBuilder: (_, index) {
+            if (index == cp.data.length) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                  ),
+                  child: cp is CursorPaginationFetchingMore
+                      ? CircularProgressIndicator()
+                      : Text("마지막 데이터 ㅠ"),
                 ),
-                child: cp is CursorPaginationFetchingMore
-                    ? CircularProgressIndicator()
-                    : Text("마지막 데이터 ㅠ"),
-              ),
+              );
+            }
+
+            final pItem = cp.data[index];
+
+            return widget.itemBuilder(
+              context,
+              pItem,
             );
-          }
-
-          final pItem = cp.data[index];
-
-          return widget.itemBuilder(
-            context,
-            pItem,
-          );
-        },
-        separatorBuilder: (_, index) {
-          return SizedBox(
-            height: 16.0,
-          );
-        },
-        itemCount: cp.data.length + 1,
+          },
+          separatorBuilder: (_, index) {
+            return SizedBox(
+              height: 16.0,
+            );
+          },
+          itemCount: cp.data.length + 1,
+        ),
       ),
     );
     return Container();

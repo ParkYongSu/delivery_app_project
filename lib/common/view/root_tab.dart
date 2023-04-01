@@ -1,5 +1,6 @@
 import 'package:delivery_app_project/common/const/colors.dart';
 import 'package:delivery_app_project/common/layout/default_layout.dart';
+import 'package:delivery_app_project/order/view/order_screen.dart';
 import 'package:delivery_app_project/product/view/product_screen.dart';
 import 'package:delivery_app_project/restaurant/view/restaurant_screen.dart';
 import 'package:delivery_app_project/user/view/profile_screen.dart';
@@ -75,7 +76,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         children: const [
           RestaurantScreen(),
           ProductScreen(),
-          Center(child: Text("receipt"),),
+          OrderScreen(),
           ProfileScreen(),
         ],
       ),
