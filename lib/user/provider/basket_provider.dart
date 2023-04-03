@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:delivery_app_project/product/model/product_model.dart';
 import 'package:delivery_app_project/user/model/basket_item_model.dart';
 import 'package:delivery_app_project/user/model/basket_patch_body.dart';
@@ -15,20 +16,31 @@ final basketProvider =
 
 class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
   final UserMeRepository repository;
+  final updateDebouncer = Debouncer(
+    const Duration(seconds: 1),
+    initialValue: null,
+    checkEquality: false,
+  );
 
   BasketStateNotifier({
     required this.repository,
-  }) : super([]);
+  }) : super([]) {
+    updateDebouncer.values.listen((event) {
+      patchBasket();
+    });
+  }
 
   Future<void> patchBasket() async {
     repository.patchBasket(
         body: BasketPatchBody(
-      basket: state.map(
-        (e) => BasketPatchBodyBasket(
-          productId: e.product.id,
-          count: e.count,
-        ),
-      ).toList(),
+      basket: state
+          .map(
+            (e) => BasketPatchBodyBasket(
+              productId: e.product.id,
+              count: e.count,
+            ),
+          )
+          .toList(),
     ));
   }
 
@@ -55,7 +67,7 @@ class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
       ];
     }
 
-    await patchBasket();
+    updateDebouncer.setValue(null);
   }
 
   Future<void> remoteBasketItem({
@@ -77,6 +89,6 @@ class BasketStateNotifier extends StateNotifier<List<BasketItemModel>> {
             e.product.id != product.id ? e : e.copyWith(count: e.count - 1))
         .toList();
 
-    await patchBasket();
+    updateDebouncer.setValue(null);
   }
 }

@@ -5,7 +5,7 @@ class PaginationUtils {
   static void paginate(
       {required ScrollController controller,
       required PaginationStateNotifier stateNotifier}) {
-    if (controller.offset > controller.position.maxScrollExtent - 300) {
+    if (controller.offset >= controller.position.maxScrollExtent) {
       stateNotifier.paginate(
         fetchMore: true,
       );
